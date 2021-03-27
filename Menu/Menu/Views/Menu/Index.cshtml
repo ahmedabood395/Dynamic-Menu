@@ -1,0 +1,102 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        ul, #myUL {
+            list-style-type: none;
+        }
+
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        .caret {
+            cursor: pointer;
+            -webkit-user-select: none; /* Safari 3.1+ */
+            -moz-user-select: none; /* Firefox 2+ */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none;
+        }
+
+            .caret::before {
+                content: "\25B6";
+                color: black;
+                display: inline-block;
+                margin-right: 6px;
+            }
+
+        .caret-down::before {
+            -ms-transform: rotate(90deg); /* IE 9 */
+            -webkit-transform: rotate(90deg); /* Safari */
+            ' transform: rotate(90deg);
+        }
+
+        .nested {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+ 
+    @{ void fun(ICollection<Menu.Models.SysFunction> s)
+        {
+            <ul class="nested">
+                @foreach (var x in s)
+                {
+                    <li>
+                        <span class="caret">@x.SysFuncNameEn</span>
+
+                        @if (x.InverseSysFuncParent.Count > 0)
+                        {
+                            fun(x.InverseSysFuncParent);
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    }
+
+    <ul id="myUL">
+        @foreach (var item in (List<Menu.Models.UserFunction>)ViewBag.listfun)
+        {
+        <li>
+            @if (item.UfFuncCodeNavigation.SysFuncParentId == null)
+            {
+                <span class="caret">@item.UfFuncCodeNavigation.SysFuncNameEn</span>
+
+                @if (item.UfFuncCodeNavigation.InverseSysFuncParent.Count > 0)
+                {
+                    fun(item.UfFuncCodeNavigation.InverseSysFuncParent);
+                }
+            }
+        </li>
+        }
+    </ul>
+
+    <script>
+        var toggler = document.getElementsByClassName("caret");
+        var i;
+
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function () {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+
+    </script>
+
+</body>
+</html>
+
